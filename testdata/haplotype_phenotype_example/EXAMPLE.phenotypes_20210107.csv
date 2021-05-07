@@ -1,0 +1,2 @@
+sample	from	from_general	gender	panel	SNV_alleles	SNV_N_alleles	alleles	INDELS_alleles	INDELS_N_alleles	N_alleles	CYP2B6	CYP2C9	G6PD	NUDT15	SLCO1B1	TPMT	DPYD	CYP4F2	RYR1	UGT1A1	Phenotype	Phenotype_score	Phenotype_UGT1A1	Phenotype_NUDT15	Phenotype_CYP4F2	Phenotype_G6PD	Phenotype_SLCO1B1	Phenotype_CYP2C9	Phenotype_DPYD	Phenotype_RYR1	Phenotype_CYP2B6	Phenotype_TPMT
+7843	Spain	Spain	Female;Male	SSV6	CYP4F2_*1/*3,CYP2B6_*1/*6	2	CYP4F2_*1/*3,CYP2B6_*1/*6		0	2	CYP2B6_*1/*6							CYP4F2_*1/*3			CYP4F2_IM,CYP2B6_IM	CYP4F2_IM,CYP2B6_IM			CYP4F2_IM						CYP2B6_IM	
