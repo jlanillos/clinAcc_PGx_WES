@@ -6,34 +6,31 @@ Mainly, it explains how to translate genotyping data (VCF-like format) into PGx 
 
 These scripts are ordered according to different steps in the analysis.
 
-
+#   IMPORTANT COMMENT  
+- Individual-associated data (i.e., variation, gender and location) is not avalable due to data protection matters.
+- Genotyping data (VCFs) will be available at a public repository upon publication.
+- The folder called "testdata" aims to provide with examples of how the input data would look like, with the aim of helping anyone to examine and understand the code
 
 # HOW TO
 
+1) Prepare your input (per sample) VCF files. [the code is shown below]
 
-#First, prepare your input (per sample) VCF files. [the code is shown below]
+- Use BCFTOOLS to split alleles in each individual VCF, then remove duplicated lines (if needed), then split again (just in case some alleles have been merged again) and merge all individual VCFs together.
+- Finally, a last splitting alleles of the merged VCF
 
-#Use BCFTOOLS to split alleles in each VCF, then remove duplicated lines, then split again (just in case) and merge all together.
-
-#Finally, a last splitting alleles of the merged VCF and we go to Python scripts to generate MERGED_GVCFS.csv --> Alleles.csv --> (merge Alleles.csv from both panels)
+ 
+2) We go to Python scripts to generate MERGED_GVCFS.csv --> Alleles.csv --> (merge Alleles.csv from both panels). Alleles.csv contains all resulting PGx alleles for each individual obtained from the VCF files.
 
 `conda activate py36`
 
+The following .CSV file contains all reference alleles defined in CPIC tables which have been used in this study (actionable alleles)
 `HAPREF=path/to/test_data/reference_HAPLOTYPES_20201130_hg38_hg19.csv`
 
 
-#   IMPORTANT COMMENT  
-#Individual-associated data (i.e., variation, gender and location) is not avalable due to data protection matters.
 
-#The folder called "testdata" aims to provide with examples of how the input data would look like, with the aim of helping anyone to examine and understand the code
+## CREATE Alleles.csv file from MERGED VCF file of each panel (CCP17 and SSV6)
 
-
-
-
-
-# CREATE Alleles.csv file from MERGED VCF file of each panel (CCP17 and SSV6)
-
-## CCP17 panel
+### CCP17 panel
 
 `FILES_DIR=/path/to/test_data/CCP17_panel/`
 
@@ -62,7 +59,7 @@ These scripts are ordered according to different steps in the analysis.
 
 `python /path/to/scripts/PGx_1_merged_to_alleles.py --fileformat '.vcf' --searchpath $FILES_DIR --hapref $HAPREF --mergedCSV MERGED_GVCFs.csv`
 
-## SSV6 panel
+### SSV6 panel
 
 `FILES_DIR=/path/to/test_data/SSV6_panel/`
 
