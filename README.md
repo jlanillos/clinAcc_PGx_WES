@@ -13,7 +13,7 @@ These scripts are ordered according to different steps in the analysis.
 
 # HOW TO
 
-1) Prepare your input (per sample) VCF files. [the code is shown below]
+1) Prepare your input (per sample) VCF files:
 
 - Use BCFTOOLS to split alleles in each individual VCF, then remove duplicated lines (if needed), then split again (just in case some alleles have been merged again) and merge all individual VCFs together.
 - Finally, a last splitting alleles of the merged VCF
