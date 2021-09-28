@@ -24,11 +24,14 @@ These scripts are ordered according to different steps in the analysis.
 `conda activate py36`
 
 The following .CSV file contains all reference alleles defined in CPIC tables which have been used in this study (actionable alleles)
-`HAPREF=path/to/test_data/reference_HAPLOTYPES_20201130_hg38_hg19.csv`
+`HAPREF=path/to/test_data/Ref_table.csv`
 
 
 
 ## CREATE Alleles.csv file from MERGED VCF file (both CCP17 and SSV6 panels, separately)
+Taking Ref_table.csv file and merged VCF file with all variant calling results of the whole cohort, the aim is to create Alleles.csv. This file contains genotyping data relevant to resolve each pharmacogenetic allele. First, work with either CCP17 or SSV6 data (CES or WES data), and then, merge both panel into a final Alleles.csv file.
+
+Several "normalization steps" are applied using bcftools in order to split multiallelic sites. These steps make easier to parse merged vcf into csv file
 
 ### CCP17 panel
 
@@ -88,13 +91,14 @@ The following .CSV file contains all reference alleles defined in CPIC tables wh
 `python /path/to/scripts/PGx_1_merged_to_alleles.py --fileformat '.vcf' --searchpath $FILES_DIR --hapref $HAPREF --mergedCSV MERGED_GVCFs.csv`
 
 
-## Merge data from both panels (SSv6 aned CCP17) [input files are specified inside the script]
+## Merge data from both panels (SSv6 and CCP17, a.k.a WES and CES, respectively) [input files are specified inside the script]
 
 #Merge Alleles.csv from both panels
 
 `python /path/to/scripts/PGx_2_mergeAlleles_CCP17_SSV6_together.py`
 
-#Get per sample diplotype information (haplotypes.csv) using Alleles.csv) [input files are specified inside the script]
+#Get per sample diplotype information (haplotypes.csv) using Alleles.csv. [input files are specified inside the script]
+haplotypes.csv contains per-sample pharmacogenetic allele information
 
 `python /path/to/scripts/PGx_3_mergeSex_Proc_AllelesperInd.py`
 (This script is important to correct gene-specific cases which require to remove redundant alleles. For example, if an alleleX is defined by variant A and alleleY is defined by phased variants A and B, the allele with the lowest number of variants is filtered out. All positive cases in our data have been revised and included in this script. This script also adds indels which have been manually revised to avoid missing some variants due to variant caller annotation diversity)
