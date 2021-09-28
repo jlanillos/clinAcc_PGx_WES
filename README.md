@@ -28,7 +28,7 @@ The following .CSV file contains all reference alleles defined in CPIC tables wh
 
 
 
-## CREATE Alleles.csv file from MERGED VCF file of each panel (CCP17 and SSV6)
+## CREATE Alleles.csv file from MERGED VCF file (both CCP17 and SSV6 panels, separately)
 
 ### CCP17 panel
 
@@ -94,9 +94,11 @@ The following .CSV file contains all reference alleles defined in CPIC tables wh
 
 `python /path/to/scripts/PGx_2_mergeAlleles_CCP17_SSV6_together.py`
 
-#Get per sample diplotype information (haplotypes...csv) using Alleles_2....csv) [input files are specified inside the script]
+#Get per sample diplotype information (haplotypes.csv) using Alleles.csv) [input files are specified inside the script]
 
 `python /path/to/scripts/PGx_3_mergeSex_Proc_AllelesperInd.py`
+(This script is important to correct gene-specific cases which require to remove redundant alleles. For example, if an alleleX is defined by variant A and alleleY is defined by phased variants A and B, the allele with the lowest number of variants is filtered out. All positive cases in our data have been revised and included in this script. This script also adds indels which have been manually revised to avoid missing some variants due to variant caller annotation diversity)
+
 
 #Convert haplotypes to phenotypes [input files are specified inside the script]
 
