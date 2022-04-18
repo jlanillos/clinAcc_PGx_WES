@@ -33,6 +33,8 @@ Taking Ref_table.csv file and merged VCF file with all variant calling results o
 
 Several "normalization steps" are applied using bcftools in order to split multiallelic sites. These steps make easier to parse merged vcf into csv file
 
+NOTE: individual VCF files can be found at https://www.ebi.ac.uk/ena/browser/view/PRJEB48632 
+
 ### CCP17 panel
 
 `FILES_DIR=/path/to/test_data/CCP17_panel/`
