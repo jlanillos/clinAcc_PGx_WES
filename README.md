@@ -19,7 +19,7 @@ These scripts are ordered according to different steps in the analysis.
 - Finally, a last splitting alleles of the merged VCF
 
  
-2) We go to Python scripts to generate MERGED_GVCFS.csv --> Alleles.csv --> (merge Alleles.csv from both panels). Alleles.csv contains all resulting PGx alleles for each individual obtained from the VCF files.
+2) We go to Python3 scripts to generate MERGED_GVCFS.csv --> Alleles.csv --> (merge Alleles.csv from both panels). Alleles.csv contains all resulting PGx alleles for each individual obtained from the VCF files.
 
 `conda activate py36`
 
