@@ -15,14 +15,16 @@ parser.add_argument('--mergedCSV', required=True)
 
 args=parser.parse_args()
 filenameformat=args.fileformat # filenameformat = '.vcf'
-searchpath = args.searchpath #searchpath = '/path/to/vcf_files.vcf'
-haplotypeRef = args.hapref #haplotypeRef = '/path/to/reference_HAPLOTYPES_20201130_hg38_hg19.csv'
-mergedCSV = args.mergedCSV # mergedCSV = 'MERGED_GVCFs.csv'
+searchpath = args.searchpath # searchpath = '/path/to/testdata/VCF/'
+haplotypeRef = args.hapref # haplotypeRef = '/path/to/testdata/Ref_table.csv': Obtained from Supplementary Table 1 at https://doi.org/10.1038/s41525-022-00283-3
+mergedCSV = args.mergedCSV # mergedCSV = 'testdata/QC/EXAMPLE.QC_MERGED_GVCFs.csv'
 
 df = pd.read_csv(mergedCSV, sep='\t')
 
+# Dataframe called "reference" is going to be loaded. Column names match with those provided by Supplementary Table 2 at https://doi.org/10.1038/s41525-022-00283-3
 reference = pd.read_csv(haplotypeRef, sep='\t')
-reference['actionable'].loc[(reference['SYMBOL'] == 'CYP4F2') & (reference['allele'] == '*2')] = 'Yes'
+reference['actionable'] = reference['Actionable allele & type of variation'].str.split(' ').str[0]
+reference['actionable'].loc[(reference['Gene Symbol'] == 'CYP4F2') & (reference['Allele'] == '*2')] = 'Yes'
 reference = reference.loc[(reference['actionable'] == 'Yes')].copy()
 # Function to find all files with the same format in te specific folder
 def files(path):
@@ -36,7 +38,7 @@ for file in files(searchpath):
     if filenameformat in file:
         vcf_files.append(file)
 
-sample_list = [x.split('.')[0].split('_')[0] for x in vcf_files]
+sample_list = [x.split('.')[0].split('_')[1] for x in vcf_files] # Customize to your file naming system to catch sample genotypes from EXAMPLE.QC_MERGED_GVCFs.csv
 samples_gt = [x + '_gt' for x in sample_list]
 
 header_cols = list(reference.columns)
@@ -52,7 +54,7 @@ def multiID(CHR, position, ref, alt):
     return(outlist)
 
 
-reference['multiID'] = reference.apply(lambda x: multiID(x['chr'], x['position_hg19'],x['ref'],x['alt']),axis=1)
+reference['multiID'] = reference.apply(lambda x: multiID(x['chr'], x['Position_hg19'],x['Reference_haplotype'],x['Alternative_haplotype']),axis=1)
 CARRIER_IDS_OUT = list()
 CARRIER_GT_OUT = list()
 WT_IDS_OUT = list()
@@ -101,8 +103,8 @@ reference['onlypositivevalues_wt_gt'] = reference['wt_gt'].apply(lambda x: ';'.j
 reference['count_carrier_ids'] = reference['onlypositivevalues_carrier_ids'].loc[reference['onlypositivevalues_carrier_ids'] != ''].apply(lambda x: len(x.split(',')))#reference['onlypositivevalues_carrier_ids'].apply(lambda x: len(x.split(',')))
 reference['count_wt_ids'] = reference['onlypositivevalues_wt_ids'].loc[reference['onlypositivevalues_wt_ids'] != ''].apply(lambda x: len(x.split(',')))#reference['onlypositivevalues_wt_ids'].apply(lambda x: len(x.split(',')))
 
-cols = ['SYMBOL', 'allele', 'function', 'chr', 'position_hg38', 'position_hg19','positionatNG', 'ref', 'alt', 'amino_acid', 'multiID','N_variants','Buscar Func var','carrier_ids', 'carrier_gt', 'wt_ids','wt_gt','onlypositivevalues_carrier_ids','onlypositivevalues_carrier_gt','onlypositivevalues_wt_ids','onlypositivevalues_wt_gt','count_carrier_ids','count_wt_ids']
-
+#cols = ['SYMBOL', 'allele', 'function', 'chr', 'position_hg38', 'position_hg19','positionatNG', 'ref', 'alt', 'amino_acid', 'multiID','N_variants','Buscar Func var','carrier_ids', 'carrier_gt', 'wt_ids','wt_gt','onlypositivevalues_carrier_ids','onlypositivevalues_carrier_gt','onlypositivevalues_wt_ids','onlypositivevalues_wt_gt','count_carrier_ids','count_wt_ids']
+cols = ['Gene Symbol', 'Allele', 'Actionable allele & type of variation', 'chr', 'Position_hg38', 'Position_hg19', 'Reference_haplotype', 'Alternative_haplotype', 'Amino acid change', 'Nr. Variants', 'Activity Value', 'CPIC_Allele Clinical Functional Status (Required)', 'CPIC_Strenght of evidence', 'actionable', 'multiID', 'carrier_ids', 'carrier_gt', 'wt_ids', 'wt_gt', 'onlypositivevalues_carrier_ids', 'onlypositivevalues_carrier_gt', 'onlypositivevalues_wt_ids', 'onlypositivevalues_wt_gt', 'count_carrier_ids', 'count_wt_ids']
 
 # We have identified the samples with different actionable alleles. Save it to a CSV:
 reference[cols].to_csv('Alleles' + '.csv',sep='\t',index = None)
