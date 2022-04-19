@@ -7,15 +7,15 @@ import numbers
 import os
 
 parser=argparse.ArgumentParser(description='PGx_1_merged_to_alleles.py')
-parser.add_argument('--fileformat', required=True)
-parser.add_argument('--searchpath', required=True)
+#parser.add_argument('--fileformat', required=True)
+#parser.add_argument('--searchpath', required=True)
 parser.add_argument('--hapref', required=True)
 parser.add_argument('--mergedCSV', required=True)
 
 
 args=parser.parse_args()
-filenameformat=args.fileformat # filenameformat = '.vcf'
-searchpath = args.searchpath # searchpath = '/path/to/testdata/VCF/'
+#filenameformat=args.fileformat # filenameformat = '.vcf'
+#searchpath = args.searchpath # searchpath = '/path/to/testdata/VCF/'
 haplotypeRef = args.hapref # haplotypeRef = '/path/to/testdata/Ref_table.csv': Obtained from Supplementary Table 1 at https://doi.org/10.1038/s41525-022-00283-3
 mergedCSV = args.mergedCSV # mergedCSV = 'testdata/QC/EXAMPLE.QC_MERGED_GVCFs.csv'
 
@@ -27,10 +27,10 @@ reference['actionable'] = reference['Actionable allele & type of variation'].str
 reference['actionable'].loc[(reference['Gene Symbol'] == 'CYP4F2') & (reference['Allele'] == '*2')] = 'Yes'
 reference = reference.loc[(reference['actionable'] == 'Yes')].copy()
 # Function to find all files with the same format in te specific folder
-def files(path):
-    for file in os.listdir(path):
-        if os.path.isfile(os.path.join(path, file)):
-            yield file
+#def files(path):
+#    for file in os.listdir(path):
+#        if os.path.isfile(os.path.join(path, file)):
+#            yield file
 ###############################################################################
 # Find all '.vcf' files in the specific directory, done by function called 'files' written above: Get samples names to finally create the samples_gt variable
 #vcf_files = list()
