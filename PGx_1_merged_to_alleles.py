@@ -68,17 +68,18 @@ for index, row in reference.iterrows():
     wildtype_gt = list()
     for j in samples_gt: #[x for x in list(df.columns) if '_gt' in x]
         sample = j.split('_')[0]
-        df['searchID'] = df['ID'] + '_' + df[sample + '_REF_VAR'] + '_' + df[sample + '_ALT_VAR']
-        genotypes = list(df[j].loc[df['searchID'].isin(positions)].values)
+        dff = df.loc[df[j] != '0/0'] # We filter out those variants which are wild type for the specific sample
+        #df['searchID'] = df['ID'] + '_' + df[sample + '_REF_VAR'] + '_' + df[sample + '_ALT_VAR']
+        genotypes = list(dff[j].loc[dff['ID'].isin(positions)].values) # Please, ensure that reference['multiID'] column naming system matches with df['ID'] naming system
         if len(genotypes) == len(positions):
             carrier_ids.append(j)
             carrier_gt.append(','.join(genotypes))
             wildtype_ids.append('')
             wildtype_gt.append('')
         else:
-            position = ['_'.join(x.split('_')[0:2]) for x in row['multiID'].split(',')]
-            dff =  df[['ID',j]].loc[df['ID'].isin(position)].set_index('ID')
-            genotypes = list(dff[j].loc[position].values)
+            #position = ['_'.join(x.split('_')[0:2]) for x in row['multiID'].split(',')]
+            dff =  df[['ID',j]].loc[df['ID'].isin(positions)].set_index('ID')
+            genotypes = list(dff[j].loc[positions].values)
             #genotypes = list(df[j].loc[df['ID'].isin(position)].values) # This is the old way, not taking control over the order of genotypes
             wildtype_ids.append(j)
             wildtype_gt.append(','.join(genotypes))
