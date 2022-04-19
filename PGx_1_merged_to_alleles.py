@@ -33,13 +33,14 @@ def files(path):
             yield file
 ###############################################################################
 # Find all '.vcf' files in the specific directory, done by function called 'files' written above: Get samples names to finally create the samples_gt variable
-vcf_files = list()
-for file in files(searchpath):
-    if filenameformat in file:
-        vcf_files.append(file)
+#vcf_files = list()
+#for file in files(searchpath):
+#    if filenameformat in file:
+#        vcf_files.append(file)
 
-sample_list = [x.split('.')[0].split('_')[1] for x in vcf_files] # Customize to your file naming system to catch sample genotypes from EXAMPLE.QC_MERGED_GVCFs.csv
-samples_gt = [x + '_gt' for x in sample_list]
+sample_list = list(df.columns) #[x.split('.')[0].split('_')[1] for x in vcf_files] # Customize to your file naming system to catch sample genotypes from EXAMPLE.QC_MERGED_GVCFs.csv
+#samples_gt = [x + '_gt' for x in sample_list]
+samples_gt = [x for x in sample_list if '_gt' in x]
 
 header_cols = list(reference.columns)
 def multiID(CHR, position, ref, alt):
@@ -60,31 +61,50 @@ CARRIER_GT_OUT = list()
 WT_IDS_OUT = list()
 WT_GT_OUT = list()
 
+# Does your df['ID'] contains "chr" at the begining? It has to mathc reference['ID']
+if not 'chr' in df['ID'].head(1).values[0]:
+    df['ID'] = 'chr' + df['ID']
+
 for index, row in reference.iterrows():
     positions = row['multiID'].split(',')
-    carrier_ids = list()
-    carrier_gt = list()
-    wildtype_ids = list()
-    wildtype_gt = list()
-    for j in samples_gt: #[x for x in list(df.columns) if '_gt' in x]
-        sample = j.split('_')[0]
-        dff = df.loc[df[j] != '0/0'] # We filter out those variants which are wild type for the specific sample
-        #df['searchID'] = df['ID'] + '_' + df[sample + '_REF_VAR'] + '_' + df[sample + '_ALT_VAR']
-        genotypes = list(dff[j].loc[dff['ID'].isin(positions)].values) # Please, ensure that reference['multiID'] column naming system matches with df['ID'] naming system
-        if len(genotypes) == len(positions):
-            carrier_ids.append(j)
-            carrier_gt.append(','.join(genotypes))
-            wildtype_ids.append('')
-            wildtype_gt.append('')
+    dff =  df.loc[df['ID'].isin(positions)].set_index('ID')
+    if len(dff) < len(positions):
+        if len(dff) == 0:
+            print('All positions(' + ', '.join(positions) + ' missing in your data. Skipping allele')
         else:
-            #position = ['_'.join(x.split('_')[0:2]) for x in row['multiID'].split(',')]
-            dff =  df[['ID',j]].loc[df['ID'].isin(positions)].set_index('ID')
-            genotypes = list(dff[j].loc[positions].values)
-            #genotypes = list(df[j].loc[df['ID'].isin(position)].values) # This is the old way, not taking control over the order of genotypes
-            wildtype_ids.append(j)
-            wildtype_gt.append(','.join(genotypes))
-            carrier_ids.append('')
-            carrier_gt.append('')
+            missingpositions = [x for x in list(dff.index) if x not in positions]
+            print('Positions ' + ', '.join(missingpositions) + ' not present in your data. Skipping allele')
+        carrier_ids = ['Positions missing. Incomplete allele']
+        carrier_gt = ['Positions missing. Incomplete allele']
+        wildtype_ids = ['Positions missing. Incomplete allele']
+        wildtype_gt = ['Positions missing. Incomplete allele']
+    else:
+        carrier_ids = list()
+        carrier_gt = list()
+        wildtype_ids = list()
+        wildtype_gt = list()
+        for j in samples_gt:
+            sample = j.split('_')[0]
+            dff = df.loc[df[j] != '0/0'] # We filter out those variants which are wild type for the specific sample
+            #df['searchID'] = df['ID'] + '_' + df[sample + '_REF_VAR'] + '_' + df[sample + '_ALT_VAR']
+            genotypes = list(dff[j].loc[dff['ID'].isin(positions)].values) # Please, ensure that reference['multiID'] column naming system matches with df['ID'] naming system
+            if len(genotypes) == len(positions):
+                carrier_ids.append(j)
+                carrier_gt.append(','.join(genotypes))
+                wildtype_ids.append('')
+                wildtype_gt.append('')
+            else:
+                #position = ['_'.join(x.split('_')[0:2]) for x in row['multiID'].split(',')]
+                dff =  df[['ID',j]].loc[df['ID'].isin(positions)].set_index('ID')
+                if len(dff) == 0:
+                    print('Positions ' + ', '.join(positions) + ' not present in your data')
+                else:
+                    genotypes = list(dff[j].loc[positions].values)
+                    #genotypes = list(df[j].loc[df['ID'].isin(position)].values) # This is the old way, not taking control over the order of genotypes
+                    wildtype_ids.append(j)
+                    wildtype_gt.append(','.join(genotypes))
+                    carrier_ids.append('')
+                    carrier_gt.append('')
 
     CARRIER_IDS_OUT.append(','.join(carrier_ids))
     CARRIER_GT_OUT.append(';'.join(carrier_gt))
