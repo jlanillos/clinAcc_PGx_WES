@@ -1,6 +1,10 @@
 # clinAc_PGx_WES
 
-This repository includes all self-made scripts written in Python to analyze the pharmacogenetic (PGx) germline genetic variation of 5,001 individuals referred for diagnostic Whole Exome Sequencing (WES).
+This repository includes all self-made scripts written in Python to analyze the pharmacogenetic (PGx) germline genetic variation of 5,001 individuals referred for diagnostic 
+Whole Exome Sequencing (WES), published here:
+
+https://www.nature.com/articles/s41525-022-00283-3
+
 
 Mainly, it explains how to translate genotyping data (VCF-like format) into PGx alleles and phenotypes depicted by all the CPIC guidelines (https://cpicpgx.org/guidelines/)
 
